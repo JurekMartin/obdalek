@@ -4,7 +4,13 @@ var brany=[];
 
 var skore = [0,0];
 var hrajemeotaznik = 1;
+var hralijsmeotaznik = 1;
 
+var krokreplay = 0;
+var timer = 0;
+var pocetkopnuti = 0;
+var poslednistouch = 0;
+// krokreplay a timer slouží k nastavení replaye, pocetkopnuti a poslednistouch na statistiku kdo dal gól a kolik bylo dotyků s míčem
 
 canvas=document.getElementById("hracipole");
 canvas.height = 600;
@@ -66,7 +72,9 @@ var mantinel = function (x,y,vyska,delka){
     this.ereflection=1;
     this.freflection=1;
     this.AI=false;
-
+    this.krokreplay=0;
+    this.replay=[];
+    this.replax=[];
 };
 
 var hrac = function (x,y,barva) {
@@ -98,6 +106,10 @@ var hrac = function (x,y,barva) {
     this.AIstredxmax=0;
     this.AIstredxmin=0;
     this.AIzlevazprava="zprava";
+    this.krokreplay=0;
+    this.replay=[];
+    this.replax=[];
+    this.stouchu=0;
 
 };
 
@@ -189,6 +201,9 @@ var mic = function (x,y,barva) {
     this.freflection = 0.5;
     this.friction = 0.000;
     this.AI=false;
+    this.krokreplay=0;
+    this.replay=[];
+    this.replax=[];
 };
 
 var brana = function (x,y,vyska,delka,barva,cije){
@@ -306,6 +321,15 @@ var vyhodnotkolize1 = function(){
             // TEDY: CHCI Z KAŽDÉ KOLIZE SPOČÍTAT ZMĚNY ENERGIE PRO KAŽDÉHO!!
             
             zkousim.kolize = 1;
+            
+            if (zkousim.typ === "mic" && testuju.typ === "hrac"){
+                
+                // počítá statistiku šťouchanců a posledního kdo se dotkl
+                pocetkopnuti++;poslednistouch=y;
+                testuju.stouchu++;
+            };
+            
+            
             
             if (zkousim.budstredx+zkousim.delka/2>testuju.budstredx-testuju.delka/2
                 &&
@@ -534,50 +558,138 @@ var finalnipohyb = function () {
     //zkontroluje, jestli tam, kam chtějí aktuálně objekty, je kolize - pokud tam není, tak se tam objekt posune. Pokud tam je, tak pro tento tick se nehýbe (obrana proti tomu, aby se objekty vnořily do sebe)
   
     var objektu = objekty.length;
-    
-    for (i=0;i<objektu;i++){
-        var zkousim = objekty[i];
-        if (zkousim.typ !=="mantinel"){
-      for (y=0;y<objektu;y++){
-        var testuju = objekty[y];
-        
-        if (i!==y 
-                &&
-                Math.abs(zkousim.budstredx-testuju.stredx)<=Math.abs(zkousim.delka+testuju.delka)/2
-                &&
-                Math.abs(zkousim.budstredy-testuju.stredy)<=Math.abs(zkousim.vyska+testuju.vyska)/2
-               )
-        {zkousim.kolize2=1;
-        } else {};
-                
-            };
-        };
-        
-    if (zkousim.typ!=="mantinel" && zkousim.kolize===0 && zkousim.kolize2===0){
-    zkousim.x=zkousim.x+zkousim.ex/zkousim.hmotnost;
-    zkousim.stredx=zkousim.stredx+zkousim.ex/zkousim.hmotnost;
-    zkousim.y=zkousim.y+zkousim.ey/zkousim.hmotnost;
-    zkousim.stredy=zkousim.stredy+zkousim.ey/zkousim.hmotnost;
-    };
-    zkousim.kolize=0;
-    zkousim.kolize2=0;
-        
-    };
   
+             
+    for (cislopokusu=0; cislopokusu<2;cislopokusu++){
+   
+ 
+        for (i=0;i<objektu;i++){
+            var zkousim = objekty[i];
+            if (zkousim.typ !=="mantinel"){
+          for (y=0;y<objektu;y++){
+            var testuju = objekty[y];
 
-    
+            if (i!==y 
+                    &&
+                    Math.abs(zkousim.budstredx-testuju.stredx)<=Math.abs(zkousim.delka+testuju.delka)/2
+                    &&
+                    Math.abs(zkousim.budstredy-testuju.stredy)<=Math.abs(zkousim.vyska+testuju.vyska)/2
+                   )
+            {zkousim.kolize2=1;
+            } else {};
+
+                };
+            };
+
+
+
+            if (zkousim.typ!=="mantinel" && zkousim.kolize===0 && zkousim.kolize2===0 && zkousim.hybalse===0){
+            zkousim.x=zkousim.x+zkousim.ex/zkousim.hmotnost;
+            zkousim.stredx=zkousim.stredx+zkousim.ex/zkousim.hmotnost;
+            zkousim.y=zkousim.y+zkousim.ey/zkousim.hmotnost;
+            zkousim.stredy=zkousim.stredy+zkousim.ey/zkousim.hmotnost;
+            zkousim.hybalse = 1;
+            };
+            zkousim.kolize=0;
+            zkousim.kolize2=0;
+            
+            if (cislopokusu===1){
+              zkousim.hybalse = 0;  
+            };
+            
+            
+        };
+
+
+    };
     
 };
+
 
 var opakovanyzaber = function (){
-  
-  for (i=0;i<objekty.length;i++){
-    
-    
-    
-  };
+
+//    každému objektu nastavuje x a y podle minulých hodnot zapsaných v replay a replax
+//    jede to smyčku - po x to zase najede odzačátku
+
+
+  if (this.krokreplay>249){
+
+                this.timer++;
+                if (this.timer>35){
+                this.krokreplay=0;
+                this.timer=0;
+                };
+    } else {
+            for (i=0;i<objekty.length;i++){
+            objekty[i].y=objekty[i].replay[this.krokreplay];
+            objekty[i].x=objekty[i].replax[this.krokreplay];
+        };
+            this.krokreplay++;       
+          
+    };   
     
 };
+
+var zaznamenejpohyb = function (){
+    
+    // vezme každý objekt a do replay a replax mu zapíše aktuální polohu. v případě, že není
+    // historie dost velká, natáhne to na 20 údajů v arrayi
+   
+    for (i=0;i<objekty.length;i++){
+
+
+    while (objekty[i].replay.length<251){
+    objekty[i].replay.push(objekty[i].y);
+    objekty[i].replax.push(objekty[i].x);
+    };
+    
+    objekty[i].replay.shift();
+    objekty[i].replax.shift(); 
+    }; 
+};
+
+var nactizvuky = function (){
+  //Create the audio tag
+    hvizd = document.createElement("audio");
+    hvizd.preload = "auto";
+
+    //Load the sound file (using a source element for expandability)
+    var src = document.createElement("source");
+    src.src = "hvizd.mp3";
+    hvizd.appendChild(src);
+    
+    //Load the audio tag
+    hvizd.load();
+    
+    
+      //Create the audio tag
+    horn = document.createElement("audio");
+    horn.preload = "auto";
+
+    //Load the sound file (using a source element for expandability)
+    var src = document.createElement("source");
+    src.src = "gol_horn.mp3";
+    horn.appendChild(src);
+    
+    //Load the audio tag
+    horn.load();
+    
+    
+};
+
+function playhvizd() {
+   //Set the current time for the audio file to the beginning
+   hvizd.volume = 1;
+   hvizd.play();
+
+};
+
+function playhorn() {
+   //Set the current time for the audio file to the beginning
+   horn.volume = 1;
+   horn.play();
+
+}  
 
 var kreslivse = function(){
     
@@ -635,17 +747,33 @@ var ctx = canvas.getContext("2d");
 ctx.font = "150px Comic Sans MS";
 ctx.fillStyle = "red";
 ctx.textAlign = "center";
-ctx.fillText("Góóóól!", canvas.width/2, canvas.height/2-50);
+ctx.fillText("Góóóól!", canvas.width/2, canvas.height/2-150);
 
 ctx.font = "150px Comic Sans MS";
 ctx.fillStyle = "red";
 ctx.textAlign = "center";
-ctx.fillText(skore[0]+" : "+skore[1], canvas.width/2, canvas.height/2+100);
+ctx.fillText(skore[0]+" : "+skore[1], canvas.width/2, canvas.height/2+000);
 
 ctx.font = "40px Comic Sans MS";
 ctx.fillStyle = "black";
 ctx.textAlign = "center";
-ctx.fillText("(Pro pokračování stiskni enter)", canvas.width/2, canvas.height/2+180);
+ctx.fillText("(Pro pokračování stiskni enter)", canvas.width/2, canvas.height/2+080);
+
+ctx.font = "40px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("Gól dal: " + objekty[poslednistouch].barva, canvas.width/2, canvas.height/2+150);
+
+ctx.font = "40px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("počet dotyků hráčů s míčem: " + pocetkopnuti, canvas.width/2, canvas.height/2+200);
+
+ctx.font = "40px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("z toho " + objekty[poslednistouch].barva +": " + objekty[poslednistouch].stouchu + " ("+ Math.round(objekty[poslednistouch].stouchu/pocetkopnuti*100) + " %)"  , canvas.width/2, canvas.height/2+250);
+
 
 };
 
@@ -722,6 +850,13 @@ var restarthry = function(){
     nastavhru();
     
     hrajemeotaznik = 1;
+    hralijsmeotaznik = 1;
+    pocetkopnuti = 0;
+    poslednistouch = 0;
+    stouchy = {};
+    krokreplay = 0;
+    timer = 0;
+    playhvizd();
  };
 };
 
@@ -735,10 +870,10 @@ pridejmic (canvas.width/2,canvas.height/2,"red");
 pridejbranku(canvas.width-200,canvas.height/7*2,canvas.height/7*3,100,"zleva",0,"purple");
 pridejbranku(100,canvas.height/7*2,canvas.height/7*3,100,"zprava",1,"green");
 
-//pridejhrace(900,canvas.height/2-130,"orange",200,201,202,203,true,canvas.height/7*2+45,canvas.height/7*5-45,canvas.width-225,0);
-//pridejhrace(400,canvas.height/2-130,"brown",300,301,302,303,true,canvas.height/7*2+45,canvas.height/7*5-45,225,0);
+pridejhrace(900,canvas.height/2-130,"orange",200,201,202,203,true,canvas.height/7*2+45,canvas.height/7*5-45,canvas.width-225,0);
+pridejhrace(400,canvas.height/2-130,"brown",300,301,302,303,true,canvas.height/7*2+45,canvas.height/7*5-45,225,0);
 
-pridejhrace(canvas.width-60,canvas.height/2-30,"purple",cislaklaves.leva, cislaklaves.prava, cislaklaves.horni, cislaklaves.dolni);
+//pridejhrace(canvas.width-60,canvas.height/2-30,"purple",cislaklaves.leva, cislaklaves.prava, cislaklaves.horni, cislaklaves.dolni);
 pridejhrace(20,canvas.height/2-30,"green",cislaklaves.a, cislaklaves.d, cislaklaves.w, cislaklaves.s);
 
 
@@ -772,11 +907,19 @@ var hra = function (){
     finalnipohyb();
     vyhodnotgoly();
     kreslivse();
+    zaznamenejpohyb();
     
     } else {
         
         // pořád kreslím objekty jak byly, ale už s ničím nehýbu, nakreslím góol a skóre a čekám na enter
         
+        if (hralijsmeotaznik === 1){
+          hralijsmeotaznik = 0;
+          playhorn();
+          // tady bude hraní gólové sirény
+        };
+        
+        opakovanyzaber();
         kreslivse();
         kresliend();
         restarthry();
@@ -785,5 +928,6 @@ var hra = function (){
     
 };
 
-hrajemeotaznik = 1;
+nactizvuky();
 setInterval(hra, 20);
+playhvizd();
