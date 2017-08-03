@@ -15,6 +15,16 @@ and open the template in the editor.
         
         <canvas id="hracipole" width ="0" height="0" style="border:1px solid #000000"></canvas>
         
+        <div>
+            
+            <label>Počet hráčů (max 4)  </label><input type="number" id="pocethracu" value="2">
+            <label>Počet AI (max 2)  </label><input type="number" id="pocetai" value="0">
+            <button onClick="pocethracu=document.getElementById('pocethracu').value;pocetai=document.getElementById('pocetai').value; klavesy[13]=true;restarthry();klavesy[13]=false;restartstatistik();skore=[0,0]">Restart hry</button>
+            <button onClick="skore=[0,0];restartstatistik()">Reset skóre</button>
+        </div>
+        
+
+        
         <script type="text/javascript" src="obdalek.js"></script>
     </body>
 </html>

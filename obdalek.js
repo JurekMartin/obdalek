@@ -1,6 +1,12 @@
 var mantinely = [];
 var objekty = [];
 var brany=[];
+var pocethracu = 2;
+var pocetai = 0;
+
+var statistika = {};
+var hraci = [];
+var ai = [];
 
 var skore = [0,0];
 var hrajemeotaznik = 1;
@@ -10,6 +16,7 @@ var krokreplay = 0;
 var timer = 0;
 var pocetkopnuti = 0;
 var poslednistouch = 0;
+var kampadlgol = 0; //1 vlevo, -1 vpravo
 // krokreplay a timer slouží k nastavení replaye, pocetkopnuti a poslednistouch na statistiku kdo dal gól a kolik bylo dotyků s míčem
 
 canvas=document.getElementById("hracipole");
@@ -39,6 +46,14 @@ var cislaklaves={
 
 document.addEventListener("keydown", mackanisipky, false);
 document.addEventListener("keyup", odmackanisipky, false);
+
+
+var restartobjektu = function(){
+    objekty = [];
+    hraci = [];
+    ai = [];
+    brany=[];
+}
 
 function mackanisipky(e){
     klavesy[e.keyCode]=true;
@@ -77,7 +92,7 @@ var mantinel = function (x,y,vyska,delka){
     this.replax=[];
 };
 
-var hrac = function (x,y,barva) {
+var hrac = function (strana,x,y,barva) {
     this.x=x;
     this.y=y;
     this.vyska=60;
@@ -110,6 +125,7 @@ var hrac = function (x,y,barva) {
     this.replay=[];
     this.replax=[];
     this.stouchu=0;
+    this.strana=strana; //1 = levá, -1 = pravá
 
 };
 
@@ -326,7 +342,8 @@ var vyhodnotkolize1 = function(){
                 
                 // počítá statistiku šťouchanců a posledního kdo se dotkl
                 pocetkopnuti++;poslednistouch=y;
-                testuju.stouchu++;
+                statistika.stouchucelkem++;
+                statistika[testuju.barva].stouchu++;
             };
             
             
@@ -522,6 +539,8 @@ var vyhodnotgoly = function(){
                  Math.abs(zkousim.stredy-testuju.stredy)<=Math.abs(testuju.vyska-zkousim.vyska-1)/2  )
                 {
                   skore[y]=skore[y]+1;
+                  statistika[objekty[poslednistouch].barva].skore[y] +=  1;
+                  kampadlgol = y*2-1;
                   hrajemeotaznik = 0;
                 };
         
@@ -743,36 +762,56 @@ var kresliend = function(){
     
 // nakreslí hlášky při padnutí gólu
 
+var hlaskakegolu = "";
+if (kampadlgol+objekty[poslednistouch].strana ===0){
+  hlaskakegolu=", dobře "+objekty[poslednistouch].barva+"!!";
+} else {
+  hlaskakegolu =", ajajaj, vlastňák!";  
+};
+
 var ctx = canvas.getContext("2d");
-ctx.font = "150px Comic Sans MS";
+ctx.font = "100px Comic Sans MS";
 ctx.fillStyle = "red";
 ctx.textAlign = "center";
-ctx.fillText("Góóóól!", canvas.width/2, canvas.height/2-150);
+ctx.fillText("Góóóól!", canvas.width/2, canvas.height/2-200);
 
-ctx.font = "150px Comic Sans MS";
+ctx.font = "100px Comic Sans MS";
 ctx.fillStyle = "red";
 ctx.textAlign = "center";
-ctx.fillText(skore[0]+" : "+skore[1], canvas.width/2, canvas.height/2+000);
+ctx.fillText(skore[0]+" : "+skore[1], canvas.width/2, canvas.height/2-100);
+
+ctx.font = "20px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("(Pro pokračování stiskni enter, bacha ať zároveň neentruješ tlačítko dole)", canvas.width/2, canvas.height/2-70);
 
 ctx.font = "40px Comic Sans MS";
 ctx.fillStyle = "black";
 ctx.textAlign = "center";
-ctx.fillText("(Pro pokračování stiskni enter)", canvas.width/2, canvas.height/2+080);
+ctx.fillText("Gól dal: " + objekty[poslednistouch].barva +hlaskakegolu, canvas.width/2, canvas.height/2-20);
 
 ctx.font = "40px Comic Sans MS";
 ctx.fillStyle = "black";
 ctx.textAlign = "center";
-ctx.fillText("Gól dal: " + objekty[poslednistouch].barva, canvas.width/2, canvas.height/2+150);
+ctx.fillText("počet dotyků hráčů s míčem: " + pocetkopnuti, canvas.width/2, canvas.height/2+30);
 
-ctx.font = "40px Comic Sans MS";
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("počet dotyků hráčů s míčem: " + pocetkopnuti, canvas.width/2, canvas.height/2+200);
+var aktualnipx = 40;
 
-ctx.font = "40px Comic Sans MS";
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("z toho " + objekty[poslednistouch].barva +": " + objekty[poslednistouch].stouchu + " ("+ Math.round(objekty[poslednistouch].stouchu/pocetkopnuti*100) + " %)"  , canvas.width/2, canvas.height/2+250);
+for (i=0;i<pocethracu;i++){
+    ctx.font = "40px Comic Sans MS";
+    ctx.fillStyle = hraci[i].barva;
+    ctx.textAlign = "center";
+    ctx.fillText(hraci[i].barva+" skóre " +statistika[hraci[i].barva].skore[0]+":"+statistika[hraci[i].barva].skore[1]+" ("+(statistika[hraci[i].barva].skore[0]-statistika[hraci[i].barva].skore[1])*hraci[i].strana+")"  +", držení míče: "+statistika[hraci[i].barva].stouchu+"/"+statistika.stouchucelkem+"("+Math.round(statistika[hraci[i].barva].stouchu/statistika.stouchucelkem*100)+" %)", canvas.width/2, canvas.height/2+aktualnipx+(1+i)*40);
+
+};
+
+for (i=0;i<pocetai;i++){
+    ctx.font = "40px Comic Sans MS";
+    ctx.fillStyle = ai[i].barva;
+    ctx.textAlign = "center";
+    ctx.fillText(ai[i].barva+" skóre " +statistika[ai[i].barva].skore[0]+":"+statistika[ai[i].barva].skore[1]+", držení míče:"+statistika[ai[i].barva].stouchu+"/"+statistika.stouchucelkem+"("+Math.round(statistika[ai[i].barva].stouchu/statistika.stouchucelkem*100)+" %)", canvas.width/2, canvas.height/2+aktualnipx+(1+i)*40+pocethracu*40);
+
+};
 
 
 };
@@ -789,19 +828,58 @@ objekty[delka+3] = new mantinel (canvas.width-10,10,canvas.height-10,10);
 
 };
 
-var pridejhrace = function(x,y,barva,leva,prava,horni,dolni,AI,ystredmin, ystredmax, xstred, levaprava){
+var pridejhrace = function(strana,x,y,barva,leva,prava,horni,dolni,AI,ystredmin, ystredmax, xstred, levaprava){
   
   // pokud není AI = true, tak se všechno za AI dá ignorovat
-    
-  delka = objekty.length;
-  objekty[delka] = new hrac (x,y,barva);
-  objekty[delka].nastavovladani(leva,prava,horni,dolni);
   
-  if (AI===true){
-      objekty[delka].nastavai (ystredmin, ystredmax, xstred, levaprava);
-  };
+  if(typeof(AI) === "undefined" ||AI===false){
+        delka = hraci.length;
+        hraci[delka] = new hrac (strana,x,y,barva);
+        hraci[delka].nastavovladani(leva,prava,horni,dolni); 
+  } else{
+        delka = ai.length;
+        ai[delka] = new hrac (strana,x,y,barva);
+        ai[delka].nastavovladani(leva,prava,horni,dolni);
+        ai[delka].nastavai (ystredmin, ystredmax, xstred, levaprava);
+  }
      
 };
+
+var restartstatistik = function(){
+
+statistika ={};
+statistika.stouchucelkem=0;
+    
+for (i=0;i<pocethracu;i++){
+    statistika[hraci[i].barva]={};
+    statistika[hraci[i].barva].skore=[0,0];
+    statistika[hraci[i].barva].stouchu=0;
+   };
+     
+for (i=0;i<pocetai;i++){
+        statistika[ai[i].barva]={};
+        statistika[ai[i].barva].skore=[0,0];
+        statistika[ai[i].barva].stouchu=0;
+   };
+};
+
+var aktivujhrace = function(){
+
+for (i=0;i<pocethracu;i++){
+
+        delka = objekty.length;
+        objekty[delka] = hraci[i];
+   };
+     
+for (i=0;i<pocetai;i++){
+        delka = objekty.length;
+        objekty[delka] = ai[i];
+
+   };    
+    
+    
+};
+
 
 var pridejmic = function(x,y,barva){
     
@@ -843,11 +921,10 @@ var restarthry = function(){
     //když je gól, tak čekám na enter (klávesa 13), po kterém nastavím hru do původní podoby
     
  if (klavesy[13]===true)   {
-    mantinely = [];
-    objekty = [];
-    brany=[];
     
+    restartobjektu();
     nastavhru();
+    aktivujhrace();
     
     hrajemeotaznik = 1;
     hralijsmeotaznik = 1;
@@ -870,20 +947,26 @@ pridejmic (canvas.width/2,canvas.height/2,"red");
 pridejbranku(canvas.width-200,canvas.height/7*2,canvas.height/7*3,100,"zleva",0,"purple");
 pridejbranku(100,canvas.height/7*2,canvas.height/7*3,100,"zprava",1,"green");
 
-pridejhrace(900,canvas.height/2-130,"orange",200,201,202,203,true,canvas.height/7*2+45,canvas.height/7*5-45,canvas.width-225,0);
-pridejhrace(400,canvas.height/2-130,"brown",300,301,302,303,true,canvas.height/7*2+45,canvas.height/7*5-45,225,0);
-
-//pridejhrace(canvas.width-60,canvas.height/2-30,"purple",cislaklaves.leva, cislaklaves.prava, cislaklaves.horni, cislaklaves.dolni);
-pridejhrace(20,canvas.height/2-30,"green",cislaklaves.a, cislaklaves.d, cislaklaves.w, cislaklaves.s);
 
 
-// pridejhrace(canvas.width-60,canvas.height/2+60,"pink",cislaklaves.j,cislaklaves.l, cislaklaves.i, cislaklaves.k);
-// pridejhrace(20,canvas.height/2+60,"yellow",cislaklaves.num4, cislaklaves.num6, cislaklaves.num8, cislaklaves.num5);
+pridejhrace(-1,canvas.width-60,canvas.height/2-30,"purple",cislaklaves.leva, cislaklaves.prava, cislaklaves.horni, cislaklaves.dolni);
+pridejhrace(1,20,canvas.height/2-30,"green",cislaklaves.a, cislaklaves.d, cislaklaves.w, cislaklaves.s);
+
+pridejhrace(-1,canvas.width-60,canvas.height/2+60,"pink",cislaklaves.j,cislaklaves.l, cislaklaves.i, cislaklaves.k);
+pridejhrace(1,20,canvas.height/2+60,"yellow",cislaklaves.num4, cislaklaves.num6, cislaklaves.num8, cislaklaves.num5);
+
+
+pridejhrace(1,400,canvas.height/2-130,"brown",300,301,302,303,true,canvas.height/7*2+45,canvas.height/7*5-45,225,0);
+pridejhrace(-1,900,canvas.height/2-130,"orange",200,201,202,203,true,canvas.height/7*2+45,canvas.height/7*5-45,canvas.width-225,0);
+
+
+
 
 };
 
 nastavhru();
-kreslivse();
+restartstatistik();
+//kreslivse();
 var hra = function (){
 
 
@@ -929,5 +1012,6 @@ var hra = function (){
 };
 
 nactizvuky();
+klavesy[13]=true;restarthry();klavesy[13]=false;
 setInterval(hra, 20);
-playhvizd();
+//playhvizd();
