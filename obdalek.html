@@ -9,22 +9,143 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="cssko_obd.css">
     </head>
     <body>
-        <div id ="skore">Obdálek: mocná hra kde obdélníky hrajou fotbálek!!!</div>
         
-        <canvas id="hracipole" width ="0" height="0" style="border:1px solid #000000"></canvas>
+        <canvas class="nopad" id="hracipole" width ="0" height="0" style="border:1px solid #000000"></canvas>
         
-        <div>
-            
-            <label>Počet hráčů (max 4)  </label><input type="number" id="pocethracu" value="2">
-            <label>Počet AI (max 2)  </label><input type="number" id="pocetai" value="0">
-            <button onClick="pocethracu=document.getElementById('pocethracu').value;pocetai=document.getElementById('pocetai').value; klavesy[13]=true;restarthry();klavesy[13]=false;restartstatistik();skore=[0,0]">Restart hry</button>
-            <button onClick="skore=[0,0];restartstatistik()">Reset skóre</button>
+        <div class="nopadd">
+            <label class="spodek">Počet hráčů (max 4)  </label><input class="spodek" type="number" id="pocethracuFormular" value="3">
+            <label class="spodek">Počet AI (max 2)  </label><input class="spodek" type="number" id="pocetai" value="0">
+            <button class="spodek" onClick="document.getElementById('hracipole').style.display='block';document.getElementById('menu').style.display='none';pocetai=document.getElementById('pocetai').value; klavesy[13]=true;restarthry();klavesy[13]=false;restartstatistik();skore=[0,0]">Rychlá hra</button>
+            <button class="spodek" onClick="skore=[0,0];restartstatistik()">Reset skóre</button>
+            <button class="spodek" onClick="toggleHru();toggleHraci();if(hrajemeotaznik===1){hrajemeotaznik=5;} else if (hrajemeotaznik === 5){hralijsmeotaznik=1;hrajemeotaznik=1;};">Nastav hru</button>
         </div>
         
+        <div id="menu">
+            <button onClick = "toggleHraci()">Zadej počet hráčů</button>
+                <div id="hrac1"><label>Jméno hráče 1 (fialový, tým vpravo): </label> <input type="text" value="purple" name="hracName">
+                    <label>Barva hráče:</label>
+                    <select name="hracBarva">
+                        <option value ="purple">Fialová</option>
+                        <option value ="green">Zelená</option>
+                        <option value ="peru">Písková</option>
+                        <option value ="yellow">Žlutá</option>
+                        <option value ="black">Černá</option>
+                        <option value ="turquoise">Tyrkysová</option>
+                        <option value ="yellowgreen">Žlutozelená</option>
+                        <option value ="red">Červená</option>
+                    </select>
+                    
+                    <label>Strana hráče:</label>
+                    <select name="hracStrana">
+                        <option value="-1">Pravá</option>
+                        <option value="1">Levá</option>                        
+                    </select>
+                    
+                    <label>Ovládání:</label>
+                    <select name="hracOvladani">
+                        <option value="sipky">Šipky</option>
+                        <option value="wsad">W S A D</option>
+                        <option value="numpad">Numpad 4 5 6 8</option>
+                        <option value="jkli">J K L I</option>
+                    </select>
+                    
+                    
+                </div>
+            <div id="hrac2"><label>Jméno hráče 2 (zelený, tým vlevo): </label> <input type="text" value="green" name="hracName">
+                    <label>Barva hráče:</label>
+                    <select name="hracBarva">
+                        <option value ="green">Zelená</option>
+                        <option value ="purple">Fialová</option>
+                        <option value ="peru">Písková</option>
+                        <option value ="yellow">Žlutá</option>
+                        <option value ="black">Černá</option>
+                        <option value ="turquoise">Tyrkysová</option>
+                        <option value ="yellowgreen">Žlutozelená</option>
+                        <option value ="red">Červená</option>
+                    </select>
 
-        
+                    <label>Strana hráče:</label>                    
+                    <select name="hracStrana">
+                        <option value="1">Levá</option>
+                        <option value="-1">Pravá</option>                        
+                    </select>
+                    
+                    <label>Ovládání:</label>
+                    <select name="hracOvladani">
+                        <option value="wsad">W S A D</option>
+                        <option value="sipky">Šipky</option>
+                        <option value="numpad">Numpad 4 5 6 8</option>
+                        <option value="jkli">J K L I</option>
+                    </select>
+                
+            </div>
+            
+            <div id="hrac3"><label>Jméno hráče 3 (pískový, tým vpravo): </label> <input type="text" value="pink" name="hracName">                    <label>Barva hráče:</label>
+                    <select name="hracBarva">
+                        <option value ="peru">Písková</option>
+                        <option value ="green">Zelená</option>
+                        <option value ="purple">Fialová</option>
+                        <option value ="yellow">Žlutá</option>
+                        <option value ="black">Černá</option>
+                        <option value ="turquoise">Tyrkysová</option>
+                        <option value ="yellowgreen">Žlutozelená</option>
+                        <option value ="red">Červená</option>
+                    </select>
+
+
+                    <label>Strana hráče:</label>                
+                    <select name="hracStrana">
+                        <option value="-1">Pravá</option>
+                        <option value="1">Levá</option>                        
+                    </select>
+                    
+                    <label>Ovládání:</label>
+                    <select name="hracOvladani">
+                        <option value="numpad">Numpad 4 5 6 8</option>
+                        <option value="sipky">Šipky</option>
+                        <option value="wsad">W S A D</option>
+                        <option value="jkli">J K L I</option>
+                    </select>
+                
+            </div>
+
+            <div id="hrac4"><label>Jméno hráče 4 (žlutý, tým vlevo): </label> <input type="text" value="yellow" name="hracName">                    <label>Barva hráče:</label>
+                    <select name="hracBarva">
+                        <option value ="yellow">Žlutá</option>
+                        <option value ="green">Zelená</option>
+                        <option value ="peru">Písková</option>
+                        <option value ="purple">Fialová</option>
+                        <option value ="black">Černá</option>
+                        <option value ="turquoise">Tyrkysová</option>
+                        <option value ="yellowgreen">Žlutozelená</option>
+                        <option value ="red">Červená</option>
+                    </select>
+
+                    <label>Strana hráče:</label>
+                    <select name="hracStrana">
+                        <option value="1">Levá</option>
+                        <option value="-1">Pravá</option>                        
+                    </select>
+                    
+                    <label>Ovládání:</label>
+                    <select name="hracOvladani">
+                        <option value="jkli">J K L I</option>
+                        <option value="sipky">Šipky</option>
+                        <option value="wsad">W S A D</option>
+                        <option value="numpad">Numpad 4 5 6 8</option>
+                    </select>
+                
+            </div>
+
+            <button onClick = "toggleHru();pocetai=document.getElementById('pocetai').value; klavesy[13]=true;restarthry();klavesy[13]=false;restartstatistik();skore=[0,0]">OK & reset hry</button>
+          
+            <div>"OK & restart hry" nebo "Rychlá hra" = reset statistik, nastavení nových hráčů apod.</div>
+            <div>"Nastav hru" = návrat do hry, hra pokračuje jako by se nic nestalo a od příštího gólu se projeví nastavení</div>
+        </div>
+
         <script type="text/javascript" src="obdalek.js"></script>
     </body>
 </html>

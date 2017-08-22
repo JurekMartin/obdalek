@@ -1,0 +1,41 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 18.8.2017, 18:09:14
+    Author     : Samsung
+*/
+
+
+.spodek{
+    font-size:3vh;
+    height:4.0vh;
+    display:inline-block;
+    margin:0;
+    margin-left:0.4vw;
+}
+
+.nopad {
+    margin:0;
+    font-size:0;
+}
+
+body {
+    margin:0;
+    padding:0;
+}
+
+canvas {
+    margin:0;
+}
+
+div {
+    margin:0;
+}
+
+#menu {
+    display:none;
+
+}
