@@ -25,7 +25,7 @@ and open the template in the editor.
         
         <div id="menu">
             <button onClick = "toggleHraci()">Zadej počet hráčů</button>
-                <div id="hrac1"><label>Jméno hráče 1 (fialový, tým vpravo): </label> <input type="text" value="purple" name="hracName">
+                <div id="hrac1"><label>Jméno hráče 1: </label> <input type="text" value="purple" name="hracName">
                     <label>Barva hráče:</label>
                     <select name="hracBarva">
                         <option value ="purple">Fialová</option>
@@ -54,7 +54,7 @@ and open the template in the editor.
                     
                     
                 </div>
-            <div id="hrac2"><label>Jméno hráče 2 (zelený, tým vlevo): </label> <input type="text" value="green" name="hracName">
+            <div id="hrac2"><label>Jméno hráče 2: </label> <input type="text" value="green" name="hracName">
                     <label>Barva hráče:</label>
                     <select name="hracBarva">
                         <option value ="green">Zelená</option>
@@ -83,7 +83,7 @@ and open the template in the editor.
                 
             </div>
             
-            <div id="hrac3"><label>Jméno hráče 3 (pískový, tým vpravo): </label> <input type="text" value="pink" name="hracName">                    <label>Barva hráče:</label>
+            <div id="hrac3"><label>Jméno hráče 3: </label> <input type="text" value="pink" name="hracName">                    <label>Barva hráče:</label>
                     <select name="hracBarva">
                         <option value ="peru">Písková</option>
                         <option value ="green">Zelená</option>
@@ -112,7 +112,7 @@ and open the template in the editor.
                 
             </div>
 
-            <div id="hrac4"><label>Jméno hráče 4 (žlutý, tým vlevo): </label> <input type="text" value="yellow" name="hracName">                    <label>Barva hráče:</label>
+            <div id="hrac4"><label>Jméno hráče 4: </label> <input type="text" value="yellow" name="hracName">                    <label>Barva hráče:</label>
                     <select name="hracBarva">
                         <option value ="yellow">Žlutá</option>
                         <option value ="green">Zelená</option>
@@ -137,13 +137,58 @@ and open the template in the editor.
                         <option value="wsad">W S A D</option>
                         <option value="numpad">Numpad 4 5 6 8</option>
                     </select>
-                
+                    
+            </div>
+
+            <div id="AI1"><label>Jméno AI 1: </label> <input type="text" value="C3PO" name="aiName">                    <label>Barva hráče:</label>
+                    <select name="aiBarva">
+                        <option value ="brown">Hnědá</option>
+                        <option value ="yellow">Žlutá</option>
+                        <option value ="green">Zelená</option>
+                        <option value ="peru">Písková</option>
+                        <option value ="purple">Fialová</option>
+                        <option value ="black">Černá</option>
+                        <option value ="turquoise">Tyrkysová</option>
+                        <option value ="yellowgreen">Žlutozelená</option>
+                        <option value ="red">Červená</option>
+                        <option value ="pink">Růžová</option>
+                    </select>
+
+                    <label>Strana AI:</label>
+                    <select name="aiStrana">
+                        <option value="1">Levá</option>
+                        <option value="-1">Pravá</option>                        
+                    </select>
+                    
+            </div>
+                    
+            <div id="AI2"><label>Jméno AI 2: </label> <input type="text" value="Kryton" name="aiName">                    <label>Barva hráče:</label>
+                    <select name="aiBarva">
+                        <option value ="pink">Růžová</option>
+                        <option value ="yellow">Žlutá</option>
+                        <option value ="green">Zelená</option>
+                        <option value ="peru">Písková</option>
+                        <option value ="purple">Fialová</option>
+                        <option value ="black">Černá</option>
+                        <option value ="turquoise">Tyrkysová</option>
+                        <option value ="yellowgreen">Žlutozelená</option>
+                        <option value ="red">Červená</option>
+                        <option value ="brown">Hnědá</option>
+                    </select>
+
+                    <label>Strana AI:</label>
+                    <select name="aiStrana">
+                        <option value="-1">Pravá</option>
+                        <option value="1">Levá</option>                        
+                    </select>
+                    
             </div>
 
             <button onClick = "toggleHru();pocetai=document.getElementById('pocetai').value; klavesy[13]=true;restarthry();klavesy[13]=false;restartstatistik();skore=[0,0]">OK & reset hry</button>
           
             <div>"OK & restart hry" nebo "Rychlá hra" = reset statistik, nastavení nových hráčů apod.</div>
             <div>"Nastav hru" = návrat do hry, hra pokračuje jako by se nic nestalo a od příštího gólu se projeví nastavení</div>
+            <div>POZOR - nenastavuj dvě AI na stejnou stranu, nebo nebudou fungovat!</div>
         </div>
 
         <script type="text/javascript" src="obdalek.js"></script>

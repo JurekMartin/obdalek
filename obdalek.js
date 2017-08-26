@@ -23,19 +23,32 @@ var poslednistouch = 0;
 var kampadlgol = 0; //1 vlevo, -1 vpravo
 // krokreplay a timer slouží k nastavení replaye, pocetkopnuti a poslednistouch na statistiku kdo dal gól a kolik bylo dotyků s míčem
 
+var game = new Object();
+var hC = window.innerHeight*0.85/600;
+var wC = window.innerWidth*0.85/1300;
+var C = Math.min(hC,wC);
+game.height = 600;
+game.width = 1300;
+
+canvas=document.getElementById("hracipole");
+var ctx=canvas.getContext("2d");
+
+
+var gameResize = function(){
 
 var hC = window.innerHeight*0.85/600;
 var wC = window.innerWidth*0.85/1300;
 var C = Math.min(hC,wC);
-var game = new Object();
 
-canvas=document.getElementById("hracipole");
-var ctx=canvas.getContext("2d");
-game.height = 600;
-game.width = 1300;
 canvas.height = 600*C;
 canvas.width = 1300*C;
 ctx.scale(C,C);
+
+};
+
+gameResize();
+
+window.addEventListener ("resize",gameResize,false);
 
 var vidimHru = 1;
 
@@ -57,6 +70,8 @@ var toggleHru = function(){
 
 var toggleHraci = function(){
     var X = document.getElementById("pocethracuFormular").value;
+    var XX = document.getElementById("pocetai").value;
+    
     for (i=0;i<4;i++){
         if (i<X){
         document.getElementById("hrac"+(i+1)).style.display="block";
@@ -64,6 +79,15 @@ var toggleHraci = function(){
         document.getElementById("hrac"+(i+1)).style.display="none";
         }
     };
+
+    for (i=0;i<2;i++){
+        if (i<XX){
+        document.getElementById("AI"+(i+1)).style.display="block";
+        } else {
+        document.getElementById("AI"+(i+1)).style.display="none";
+        }
+    };
+
 };
 
 
@@ -946,7 +970,63 @@ var spravujHrace = function (){
     
 };
 
+var spravujAI = function (){
 
+	levaAIosaX = 225;
+	pravaAIosaX = game.width-225;
+	
+	pocetai = document.getElementById("pocetai").value*1;
+	
+	for(i=0;i<pocetai;i++){
+	
+            var nr = ai.length;
+            ai[nr] = new hrac ();
+
+            ai[nr].barva = document.getElementsByName("aiBarva")[i].value;
+
+            ai[nr].name = document.getElementsByName("aiName")[i].value;
+
+//            ai[nr].barva = "blue";
+
+//            ai[nr].name = "ROBOT " +(i+1);
+  
+            ai[nr].strana = document.getElementsByName("aiStrana")[i].value*1;
+
+//            ai[nr].strana = i*2-1;
+
+            ai[nr].nastavovladani(i*250+1,i*250+2,i*250+3,i*250+4);
+
+
+            if (ai[nr].strana === -1){
+                ai[nr].x = pravaAIosaX;
+
+            } else {
+              ai[nr].x = levaAIosaX;
+            };
+	
+	
+		ai[nr].stredx = ai[nr].x + ai[nr].delka/2;
+
+ 		ai[nr].y = game.height/2+30;
+        
+            ai[nr].stredy = ai[nr].y + ai [nr].vyska/2;   
+
+		if (ai[nr].strana === -1){
+		
+				ai[nr].nastavai (game.height/7*2+45,game.height/7*5-45,game.width-225,-1);
+		
+		} else {
+				ai[nr].nastavai (game.height/7*2+45,game.height/7*5-45,225,1);
+		};
+	
+	};
+	
+
+};
+
+
+
+/*
 var pridejhrace = function(x,y,barva,leva,prava,horni,dolni,AI,ystredmin, ystredmax, xstred, levaprava){
   
   // pokud není AI = true, tak se všechno za AI dá ignorovat
@@ -954,7 +1034,7 @@ var pridejhrace = function(x,y,barva,leva,prava,horni,dolni,AI,ystredmin, ystred
   
   if(typeof(AI) === "undefined" ||AI===false){
   
-        /*delka = hraci.length;
+        delka = hraci.length;
 //        var ypsilon = game.height/hracu[((hraci[delka].strana+1)/2)];
  //       alert(ypsilon);
         hraci[delka] = new hrac (x,y,barva);
@@ -962,7 +1042,7 @@ var pridejhrace = function(x,y,barva,leva,prava,horni,dolni,AI,ystredmin, ystred
         hraci[delka].name = document.getElementsByName("hracName")[hraci.length-1].value;
         hraci[delka].barva = document.getElementsByName("hracBarva")[hraci.length-1].value;
         hraci[delka].strana = document.getElementsByName("hracStrana")[hraci.length-1].value*1;
-*/
+
   } else{
         delka = ai.length;
         ai[delka] = new hrac ();
@@ -976,7 +1056,7 @@ var pridejhrace = function(x,y,barva,leva,prava,horni,dolni,AI,ystredmin, ystred
         ai[delka].name = ai[delka].barva + " robot";
   }
      
-};
+};  */
 
 
 var restartstatistik = function(){
@@ -1070,7 +1150,7 @@ var restarthry = function(){
     restartobjektu();
     nastavhru();
     aktivujhrace();
-    
+	
     hrajemeotaznik = 1;
     hralijsmeotaznik = 1;
     pocetkopnuti = 0;
@@ -1093,6 +1173,7 @@ pridejbranku(game.width-200,game.height/7*2,game.height/7*3,100,"zleva",0,"purpl
 pridejbranku(100,game.height/7*2,game.height/7*3,100,"zprava",1,"green");
 
 spravujHrace();
+spravujAI();
 
 /*
 pridejhrace(game.width-60,game.height/2-30,"purple",cislaklaves.leva, cislaklaves.prava, cislaklaves.horni, cislaklaves.dolni);
@@ -1103,8 +1184,8 @@ pridejhrace(20,game.height/2+60,"yellow",cislaklaves.num4, cislaklaves.num6, cis
 
 */
 
-pridejhrace(400,game.height/2-130,"brown",300,301,302,303,true,game.height/7*2+45,game.height/7*5-45,225,0);
-pridejhrace(900,game.height/2-130,"pink",200,201,202,203,true,game.height/7*2+45,game.height/7*5-45,game.width-225,0);
+//pridejhrace(400,game.height/2-130,"brown",300,301,302,303,true,game.height/7*2+45,game.height/7*5-45,225,0);
+//pridejhrace(900,game.height/2-130,"pink",200,201,202,203,true,game.height/7*2+45,game.height/7*5-45,game.width-225,0);
 
 
 
